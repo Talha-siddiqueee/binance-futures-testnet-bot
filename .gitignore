@@ -1,0 +1,8 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+logs/bot.log
+.pytest_cache/
+.coverage
