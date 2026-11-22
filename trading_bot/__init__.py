@@ -1,3 +1,3 @@
-"""Binance USDⓈ-M Futures Testnet order application."""
+"""Binance USDⓈ-M Futures Demo trading application."""
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"

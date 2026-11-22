@@ -1,7 +1,7 @@
 """Generate visibly labeled MOCK API logs for documentation and evaluation.
 
 These records exercise the real client/order code with a fake HTTP session.
-They are not proof of orders executed on Binance. Run the CLI with testnet
+They are not proof of orders executed on Binance Demo. Run the CLI with Demo
 credentials to produce genuine logs in logs/bot.log.
 """
 

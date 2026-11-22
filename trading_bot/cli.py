@@ -1,4 +1,4 @@
-"""Command-line interface for placing testnet futures orders."""
+"""Command-line interface for placing USDⓈ-M Futures Demo orders."""
 
 import argparse
 import logging
@@ -21,7 +21,7 @@ load_dotenv()  # Load local .env values when present; environment variables take
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="trading-bot",
-        description="Place MARKET and LIMIT orders on Binance USDⓈ-M Futures Testnet only.",
+        description="Place MARKET and LIMIT orders on Binance USDⓈ-M Futures Demo only.",
     )
     parser.add_argument("--symbol", help="Trading pair, e.g. BTCUSDT")
     parser.add_argument("--side", choices=("BUY", "SELL"), type=str.upper, help="Order side")
@@ -37,8 +37,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _collect_interactive(args: argparse.Namespace) -> argparse.Namespace:
-    print("\n=== Binance Futures Testnet Order ===")
-    print("Environment: TESTNET (no mainnet endpoint is configured)\n")
+    print("\n=== Binance Futures Demo Order ===")
+    print("Environment: DEMO (no mainnet endpoint is configured)\n")
     if not args.symbol:
         args.symbol = input("Symbol [BTCUSDT]: ").strip() or "BTCUSDT"
     if not args.side:
@@ -56,9 +56,9 @@ def _credentials() -> tuple[str, str]:
     api_key = os.getenv("BINANCE_API_KEY", "").strip()
     api_secret = os.getenv("BINANCE_API_SECRET", "").strip()
     if not api_key:
-        api_key = input("Binance Testnet API key: ").strip()
+        api_key = input("Binance Demo API key: ").strip()
     if not api_secret:
-        api_secret = getpass("Binance Testnet API secret: ").strip()
+        api_secret = getpass("Binance Demo API secret: ").strip()
     if not api_key or not api_secret:
         raise TradingBotError("API key and secret are required. Set BINANCE_API_KEY and BINANCE_API_SECRET.")
     return api_key, api_secret
@@ -82,7 +82,7 @@ def _print_order_response(response: dict) -> None:
     for field in fields:
         value = response.get(field)
         print(f"{field}: {value if value not in (None, '') else 'N/A'}")
-    print("\nSUCCESS: Order request accepted by Binance Futures Testnet.")
+    print("\nSUCCESS: Order request accepted by Binance Futures Demo.")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -108,7 +108,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             symbol=args.symbol, side=args.side, order_type=args.order_type,
             quantity=args.quantity, price=args.price,
         )
-        print("Target: https://testnet.binancefuture.com (USDⓈ-M Futures Testnet)")
+        print("Target: https://demo-fapi.binance.com (USDⓈ-M Futures Demo)")
         _print_order_summary(normalized)
         api_key, api_secret = _credentials()
         client = BinanceFuturesTestnetClient(api_key, api_secret)

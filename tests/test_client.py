@@ -41,7 +41,7 @@ class ClientTests(unittest.TestCase):
 
         self.assertEqual(response["orderId"], 12345)
         call = session.calls[0]
-        self.assertEqual(call["url"], "https://testnet.binancefuture.com/fapi/v1/order")
+        self.assertEqual(call["url"], "https://demo-fapi.binance.com/fapi/v1/order")
         self.assertEqual(call["method"], "POST")
         self.assertEqual(call["params"]["type"], "MARKET")
         self.assertNotIn("price", call["params"])
@@ -58,8 +58,29 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(params["price"], "70000")
         self.assertEqual(params["timeInForce"], "GTC")
 
-    def test_base_url_is_testnet(self):
-        self.assertEqual(BinanceFuturesTestnetClient.BASE_URL, "https://testnet.binancefuture.com")
+    def test_base_url_is_demo(self):
+        self.assertEqual(BinanceFuturesTestnetClient.BASE_URL, "https://demo-fapi.binance.com")
+
+
+    def test_account_config_uses_signed_request(self):
+        session = FakeSession(FakeResponse({"feeTier": 0, "canTrade": True}))
+        client = BinanceFuturesTestnetClient("test-key", "test-secret", session=session)
+        result = client.get_account_config()
+        self.assertTrue(result["canTrade"])
+        call = session.calls[0]
+        self.assertEqual(call["method"], "GET")
+        self.assertEqual(call["url"], "https://demo-fapi.binance.com/fapi/v1/accountConfig")
+        self.assertIn("signature", call["params"])
+
+    def test_exchange_info_uses_public_request(self):
+        session = FakeSession(FakeResponse({"symbols": []}))
+        client = BinanceFuturesTestnetClient("dummy", "dummy", session=session)
+        result = client.get_exchange_info()
+        self.assertEqual(result["symbols"], [])
+        call = session.calls[0]
+        self.assertEqual(call["method"], "GET")
+        self.assertEqual(call["url"], "https://demo-fapi.binance.com/fapi/v1/exchangeInfo")
+        self.assertNotIn("signature", call["params"])
 
     def test_server_error_marks_order_outcome_unknown(self):
         session = FakeSession(FakeResponse({"code": -1000, "msg": "Unknown error"}, status_code=503))

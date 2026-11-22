@@ -1,4 +1,4 @@
-"""Minimal signed REST client for Binance USDⓈ-M Futures Testnet."""
+"""Minimal signed REST client for Binance USDⓈ-M Futures Demo."""
 
 import hashlib
 import hmac
@@ -22,9 +22,12 @@ def _redact_signature(value: str) -> str:
 
 
 class BinanceFuturesTestnetClient:
-    """Small REST client pinned to the requested Futures Testnet host."""
+    """Small REST client pinned to the Binance USDⓈ-M Futures Demo host.
 
-    BASE_URL = "https://testnet.binancefuture.com"
+    The historical class name is retained to avoid breaking the CLI/tests.
+    """
+
+    BASE_URL = "https://demo-fapi.binance.com"
     ORDER_ENDPOINT = "/fapi/v1/order"
 
     def __init__(
@@ -144,8 +147,22 @@ class BinanceFuturesTestnetClient:
             raise NetworkError("Binance returned an unexpected response format.")
         return payload
 
+    def get_account_config(self) -> dict[str, Any]:
+        """Fetch account configuration using an authenticated GET request."""
+        result = self._request("GET", "/fapi/v1/accountConfig", signed=True)
+        if not isinstance(result, dict):
+            raise NetworkError("Unexpected account configuration response: expected a JSON object.")
+        return result
+
+    def get_exchange_info(self) -> dict[str, Any]:
+        """Fetch public USDⓈ-M Futures exchange information."""
+        result = self._request("GET", "/fapi/v1/exchangeInfo")
+        if not isinstance(result, dict):
+            raise NetworkError("Unexpected exchange information response: expected a JSON object.")
+        return result
+
     def place_order(self, order: Mapping[str, str]) -> dict[str, Any]:
-        """Submit a MARKET or LIMIT order to the Futures Testnet."""
+        """Submit a MARKET or LIMIT order to Binance Futures Demo."""
         params: dict[str, Any] = {
             "symbol": order["symbol"],
             "side": order["side"],
